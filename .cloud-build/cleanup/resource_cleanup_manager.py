@@ -11,7 +11,7 @@ RESOURCE_UPDATE_BUFFER_IN_SECONDS = 60 * 60 * 8
 class ResourceCleanupManager(abc.ABC):
     @property
     @abc.abstractmethod
-    def type_name(str) -> str:
+    def type_name(self) -> str:
         pass
 
     @abc.abstractmethod

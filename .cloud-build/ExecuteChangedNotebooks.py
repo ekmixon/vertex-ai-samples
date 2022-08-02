@@ -243,9 +243,9 @@ def run_changed_notebooks(
     with open(test_paths_file) as file:
         lines = [line.strip() for line in file.readlines()]
         lines = [line for line in lines if len(line) > 0]
-        test_paths = [line for line in lines]
+        test_paths = list(lines)
 
-    if len(test_paths) == 0:
+    if not test_paths:
         raise RuntimeError("No test folders found.")
 
     print(f"Checking folders: {test_paths}")
@@ -258,7 +258,7 @@ def run_changed_notebooks(
             ["git", "diff", "--name-only", f"origin/{base_branch}..."] + test_paths
         )
     else:
-        print(f"Looking for all notebooks.")
+        print("Looking for all notebooks.")
         notebooks = subprocess.check_output(["git", "ls-files"] + test_paths)
 
     notebooks = notebooks.decode("utf-8").split("\n")
@@ -268,7 +268,7 @@ def run_changed_notebooks(
 
     notebook_execution_results: List[NotebookExecutionResult] = []
 
-    if len(notebooks) > 0:
+    if notebooks:
         print(f"Found {len(notebooks)} modified notebooks: {notebooks}")
 
         if should_parallelize and len(notebooks) > 1:
@@ -339,7 +339,7 @@ def run_changed_notebooks(
     print(f"Cumulative notebook duration: {format_timedelta(total_notebook_duration)}")
 
     # Raise error if any notebooks failed
-    if not all([result.is_pass for result in results_sorted]):
+    if not all(result.is_pass for result in results_sorted):
         raise RuntimeError("Notebook failures detected. See logs for details")
 
 

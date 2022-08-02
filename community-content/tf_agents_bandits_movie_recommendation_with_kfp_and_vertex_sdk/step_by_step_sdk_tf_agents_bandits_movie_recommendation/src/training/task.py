@@ -151,8 +151,8 @@ def execute_task(args: argparse.Namespace,
     hypertune_client: Client for submitting hyperparameter tuning metrics.
   """
   # [Do Not Change] Set the root directory for training artifacts.
-  root_dir = os.environ[
-      "AIP_MODEL_DIR"] if not args.run_hyperparameter_tuning else ""
+  root_dir = ("" if args.run_hyperparameter_tuning else
+              os.environ["AIP_MODEL_DIR"])
 
   # Use best hyperparameters learned from a previous hyperparameter tuning job.
   logging.info(args.train_with_best_hyperparameters)
@@ -201,9 +201,10 @@ def execute_task(args: argparse.Namespace,
       steps_per_loop=args.steps_per_loop,
       additional_metrics=metrics,
       run_hyperparameter_tuning=args.run_hyperparameter_tuning,
-      root_dir=root_dir if not args.run_hyperparameter_tuning else None,
-      artifacts_dir=args.artifacts_dir
-      if not args.run_hyperparameter_tuning else None)
+      root_dir=None if args.run_hyperparameter_tuning else root_dir,
+      artifacts_dir=None
+      if args.run_hyperparameter_tuning else args.artifacts_dir,
+  )
   if args.profiler_dir is not None:
     tf.profiler.experimental.stop()
 

@@ -35,13 +35,13 @@ class TransformersClassifierHandler(BaseHandler):
         model_pt_path = os.path.join(model_dir, serialized_file)
         if not os.path.isfile(model_pt_path):
             raise RuntimeError("Missing the model.pt or pytorch_model.bin file")
-        
+
         # Load model
         self.model = AutoModelForSequenceClassification.from_pretrained(model_dir)
         self.model.to(self.device)
         self.model.eval()
         logger.debug('Transformer model from path {0} loaded successfully'.format(model_dir))
-        
+
         # Ensure to use the same tokenizer used during training
         self.tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
 
@@ -68,12 +68,13 @@ class TransformersClassifierHandler(BaseHandler):
 
         # Tokenize the texts
         tokenizer_args = ((sentences,))
-        inputs = self.tokenizer(*tokenizer_args,
-                                padding='max_length',
-                                max_length=128,
-                                truncation=True,
-                                return_tensors = "pt")
-        return inputs
+        return self.tokenizer(
+            *tokenizer_args,
+            padding='max_length',
+            max_length=128,
+            truncation=True,
+            return_tensors="pt"
+        )
 
     def inference(self, inputs):
         """ Predict the class of a text using a trained transformer model.

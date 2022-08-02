@@ -20,12 +20,13 @@ from . import UpdateNotebookVariables as update_notebook_variables
 
 class RemoveNoExecuteCells(Preprocessor):
     def preprocess(self, notebook, resources=None):
-        executable_cells = []
-        for cell in notebook.cells:
-            if cell.metadata.get("tags"):
-                if "no_execute" in cell.metadata.get("tags"):
-                    continue
-            executable_cells.append(cell)
+        executable_cells = [
+            cell
+            for cell in notebook.cells
+            if not cell.metadata.get("tags")
+            or "no_execute" not in cell.metadata.get("tags")
+        ]
+
         notebook.cells = executable_cells
         return notebook, resources
 
